@@ -11,7 +11,18 @@ const io = socketio(server);
 app.use(express.static(path.join(__dirname, "public")));
 
 // run when client connects
-io.on("connection", socket => console.log("new ws connection..."));
+io.on("connection", socket => {
+  // Welcome current user
+  socket.emit("message", "Welcome to Node Chat!");
+
+  // brocast when a user connect
+  socket.broadcast.emit("message", "A user has joined the chat");
+
+  // Runs when client disconnects
+  socket.on("disconnect", () => {
+    io.emit("message", "A user has left the chat");
+  });
+});
 
 const PORT = process.env.PORT || 3000;
 
